@@ -21,7 +21,7 @@ public struct MustacheViewEngine: Renderable {
         self.templateData = templateData
     }
 
-    public func render(path: String, result: (Void throws -> Data) -> Void) {
+    public func render(_ path: String, result: (Void throws -> Data) -> Void) {
         FS.readFile("\(path).\(fileExtension)") {
             if case .Error(let err) = $0 {
                 result {
@@ -30,7 +30,7 @@ public struct MustacheViewEngine: Renderable {
             } else if case .Success(let buf) = $0 {
                 do {
                     let template = try Template(string: buf.toString()!)
-                    let compiled = try template.render(Box(boxable: self.templateData))
+                    let compiled = try template.render(box: Box(boxable: self.templateData))
                     result {
                         Data(compiled)
                     }

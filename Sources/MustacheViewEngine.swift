@@ -22,23 +22,13 @@ public struct MustacheViewEngine: Renderable {
     }
 
     public func render(_ path: String, result: ((Void) throws -> Data) -> Void) {
-        FS.readFile("\(path).\(fileExtension)") {
-            if case .Error(let err) = $0 {
-                result {
-                    throw err
-                }
-            } else if case .Success(let buf) = $0 {
-                do {
-                    let template = try Template(string: buf.toString()!)
-                    let compiled = try template.render(box: Box(boxable: self.templateData))
-                    result {
-                        Data(compiled)
-                    }
-                } catch {
-                    result {
-                        throw error
-                    }
-                }
+        FS.readFile("\(path).\(fileExtension)") { getData in
+            result {
+                let data = try getData()
+                let template = try Template(string: "\(data)")
+                let compiled = try template.render(box: Box(boxable: self.templateData))
+                
+                return compiled.data
             }
         }
     }

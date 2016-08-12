@@ -21,7 +21,7 @@ public struct MustacheViewEngine: Renderable {
         self.templateData = templateData
     }
 
-    public func render(_ path: String, result: ((Void) throws -> Data) -> Void) {
+    public func render(_ path: String, result: @escaping ((Void) throws -> Data) -> Void) {
         FS.readFile("\(path).\(fileExtension)") { getData in
             result {
                 let data = try getData()
